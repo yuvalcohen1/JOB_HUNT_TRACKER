@@ -23,5 +23,14 @@ export interface Job {
 
 export async function getAllJobs(): Promise<Job[]> {
   const jobs = await sql`SELECT * FROM jobs`;
-  return jobs as Job[];
+  return jobs.map((row) => ({
+    id: row.id,
+    title: row.title,
+    company: row.company,
+    status: row.status,
+    interestLevel: row.interest_level,
+    appliedDate: row.applied_date,
+    description: row.description,
+    notes: row.notes,
+  }));
 }
