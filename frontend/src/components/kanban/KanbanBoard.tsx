@@ -72,50 +72,89 @@ export default function KanbanBoard() {
 
   if (loading)
     return (
-      <div className="flex h-screen items-center justify-center text-gray-500">
-        Loading jobs...
+      <div className="flex h-screen items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+          <span className="text-sm text-slate-400 font-medium">
+            Loading your jobs…
+          </span>
+        </div>
       </div>
     );
 
   if (error)
     return (
-      <div className="flex h-screen items-center justify-center text-red-500">
-        Error: {error}
+      <div className="flex h-screen items-center justify-center bg-slate-50">
+        <div className="text-center">
+          <div className="text-4xl mb-3">⚠️</div>
+          <p className="text-red-500 font-medium">{error}</p>
+        </div>
       </div>
     );
 
   return (
-    <div className="flex h-screen bg-white">
-      <div className="flex-1 overflow-x-auto p-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">
-          🗂 Job Search Board
-        </h1>
-        <button
-          onClick={handleAddJob}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
-        >
-          + Add Job
-        </button>
-        <div className="flex gap-4 items-start">
-          {COLUMNS.map((column) => (
-            <KanbanColumn
-              key={column}
-              column={column}
-              jobs={getJobsForColumn(column)}
-              onCardClick={handleCardClick}
-            />
-          ))}
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
+      {/* Main board area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Top header bar */}
+        <header className="flex-none flex items-center justify-between px-8 py-5 bg-white border-b border-slate-200 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-sm">
+              🗂
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-slate-800 leading-tight">
+                Job Search Board
+              </h1>
+              <p className="text-xs text-slate-400">
+                {jobs.length} {jobs.length === 1 ? "position" : "positions"}{" "}
+                tracked
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleAddJob}
+            className="cursor-pointer flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all shadow-sm shadow-indigo-200"
+          >
+            <span className="text-base leading-none">+</span>
+            Add Job
+          </button>
+        </header>
+
+        {/* Kanban columns */}
+        <div className="flex-1 overflow-x-auto overflow-y-hidden flex justify-center">
+          <div className="inline-flex gap-4 h-full px-8 py-6 items-start">
+            {COLUMNS.map((column) => (
+              <KanbanColumn
+                key={column}
+                column={column}
+                jobs={getJobsForColumn(column)}
+                onCardClick={handleCardClick}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
+      {/* Centered modal overlay */}
       {selectedJob && (
-        <div className="w-96 border-l border-gray-200 bg-white shadow-xl p-6 overflow-y-auto">
-          <JobDetailPanel
-            job={selectedJob}
-            onClose={handleClosePanel}
-            onSave={handleSave}
-            onDelete={handleDelete}
-          />
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm"
+          onClick={handleClosePanel}
+        >
+          <div
+            className="relative w-full max-w-lg mx-4 bg-white rounded-2xl shadow-2xl max-h-[85vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex-1 overflow-y-auto p-6">
+              <JobDetailPanel
+                job={selectedJob}
+                onClose={handleClosePanel}
+                onSave={handleSave}
+                onDelete={handleDelete}
+              />
+            </div>
+          </div>
         </div>
       )}
     </div>
