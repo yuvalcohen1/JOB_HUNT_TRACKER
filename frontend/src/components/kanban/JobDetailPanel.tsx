@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Job, Status, InterestLevel } from "../../types/kanban";
 
 interface JobDetailPanelProps {
@@ -24,13 +24,28 @@ const INTEREST_LEVELS: { value: InterestLevel; label: string }[] = [
   { value: "backup", label: "🪂 Backup" },
 ];
 
+const toDateInputValue = (value: string | null): string => {
+  if (!value) return "";
+  return value.split("T")[0]; // "2026-05-09T21:00:00.000Z" → "2026-05-09"
+};
+
 export default function JobDetailPanel({
   job,
   onClose,
   onSave,
   onDelete,
 }: JobDetailPanelProps) {
-  const [form, setForm] = useState<Job>({ ...job });
+  const [form, setForm] = useState<Job>(() => ({
+    ...job,
+    appliedDate: toDateInputValue(job.appliedDate),
+  }));
+
+  useEffect(() => {
+    setForm({
+      ...job,
+      appliedDate: toDateInputValue(job.appliedDate),
+    });
+  }, [job.id]);
 
   const handleChange = (field: keyof Job, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -116,7 +131,7 @@ export default function JobDetailPanel({
           <input
             type="date"
             className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-            value={form.appliedDate}
+            value={form.appliedDate ?? ""}
             onChange={(e) => handleChange("appliedDate", e.target.value)}
           />
         </div>
@@ -128,7 +143,7 @@ export default function JobDetailPanel({
           <textarea
             rows={4}
             className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none"
-            value={form.description}
+            value={form.description ?? ""}
             onChange={(e) => handleChange("description", e.target.value)}
           />
         </div>
@@ -141,7 +156,7 @@ export default function JobDetailPanel({
             rows={4}
             className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none"
             placeholder="Write your thoughts about this position..."
-            value={form.notes}
+            value={form.notes ?? ""}
             onChange={(e) => handleChange("notes", e.target.value)}
           />
         </div>

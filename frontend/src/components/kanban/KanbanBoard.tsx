@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { type Job, type Status, createEmptyJob } from "../../types/kanban";
-import { mockJobs } from "../../data/mockJobs";
+import { jobsApi } from "../../services/jobsApi";
 import KanbanColumn from "./KanbanColumn";
 import JobDetailPanel from "./JobDetailPanel";
 
@@ -14,42 +14,78 @@ const COLUMNS: Status[] = [
 ];
 
 export default function KanbanBoard() {
-  const [jobs, setJobs] = useState<Job[]>(mockJobs);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    jobsApi
+      .getAll()
+      .then(setJobs)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
 
   const getJobsForColumn = (column: Status) =>
     jobs.filter((job) => job.status === column);
 
-  const handleCardClick = (job: Job) => {
-    setSelectedJob(job);
+  const handleCardClick = (job: Job) => setSelectedJob(job);
+  const handleClosePanel = () => setSelectedJob(null);
+
+  const handleSave = async (updated: Job) => {
+    const needsDate =
+      updated.status !== "considering" &&
+      updated.status !== "rejected" &&
+      !updated.appliedDate;
+
+    const jobToSave: Job = needsDate
+      ? { ...updated, appliedDate: new Date().toISOString().split("T")[0] }
+      : updated;
+
+    try {
+      const exists = jobs.some((j) => j.id === jobToSave.id);
+      if (exists) {
+        const saved = await jobsApi.update(jobToSave.id, jobToSave);
+        setJobs((prev) => prev.map((j) => (j.id === saved.id ? saved : j)));
+      } else {
+        const created = await jobsApi.create(jobToSave);
+        setJobs((prev) => [...prev, created]);
+      }
+      setSelectedJob(null);
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
-  const handleClosePanel = () => {
-    setSelectedJob(null);
+  const handleAddJob = () => setSelectedJob(createEmptyJob());
+
+  const handleDelete = async (id: string) => {
+    try {
+      await jobsApi.delete(id);
+      setJobs((prev) => prev.filter((j) => j.id !== id));
+      setSelectedJob(null);
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
-  const handleSave = (updated: Job) => {
-    setJobs((prev) => {
-      const exists = prev.some((j) => j.id === updated.id);
-      return exists
-        ? prev.map((j) => (j.id === updated.id ? updated : j))
-        : [...prev, updated];
-    });
-    setSelectedJob(null);
-  };
+  if (loading)
+    return (
+      <div className="flex h-screen items-center justify-center text-gray-500">
+        Loading jobs...
+      </div>
+    );
 
-  const handleAddJob = () => {
-    setSelectedJob(createEmptyJob());
-  };
-
-  const handleDelete = (id: string) => {
-    setJobs((prev) => prev.filter((j) => j.id !== id));
-    setSelectedJob(null);
-  };
+  if (error)
+    return (
+      <div className="flex h-screen items-center justify-center text-red-500">
+        Error: {error}
+      </div>
+    );
 
   return (
     <div className="flex h-screen bg-white">
-      {/* Board */}
       <div className="flex-1 overflow-x-auto p-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
           🗂 Job Search Board
