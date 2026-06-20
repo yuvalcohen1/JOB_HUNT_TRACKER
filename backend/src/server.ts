@@ -1,5 +1,6 @@
 import express, { Application, Request, Response } from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import jobsRouter from "./routes/jobs";
 
 dotenv.config();
@@ -7,6 +8,11 @@ dotenv.config();
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
