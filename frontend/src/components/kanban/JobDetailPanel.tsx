@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Job, Column, InterestLevel } from "../../types/kanban";
+import type { Job, Status, InterestLevel } from "../../types/kanban";
 
 interface JobDetailPanelProps {
   job: Job;
@@ -8,7 +8,7 @@ interface JobDetailPanelProps {
   onDelete: (id: string) => void;
 }
 
-const COLUMNS: { value: Column; label: string }[] = [
+const COLUMNS: { value: Status; label: string }[] = [
   { value: "considering", label: "Considering" },
   { value: "applied", label: "Applied" },
   { value: "initial_interview", label: "Initial Interview" },
@@ -79,8 +79,8 @@ export default function JobDetailPanel({
           </label>
           <select
             className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-            value={form.column}
-            onChange={(e) => handleChange("column", e.target.value as Column)}
+            value={form.status}
+            onChange={(e) => handleChange("status", e.target.value as Status)}
           >
             {COLUMNS.map((col) => (
               <option key={col.value} value={col.value}>

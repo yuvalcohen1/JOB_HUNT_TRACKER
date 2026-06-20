@@ -1,13 +1,13 @@
-import type { Job, Column } from "../../types/kanban";
+import type { Job, Status } from "../../types/kanban";
 import JobCard from "./JobCard";
 
 interface KanbanColumnProps {
-  column: Column;
+  column: Status;
   jobs: Job[];
   onCardClick: (job: Job) => void;
 }
 
-const columnConfig: Record<Column, { label: string; headerClass: string }> = {
+const columnConfig: Record<Status, { label: string; headerClass: string }> = {
   considering: {
     label: "Considering",
     headerClass: "bg-purple-100 text-purple-800",

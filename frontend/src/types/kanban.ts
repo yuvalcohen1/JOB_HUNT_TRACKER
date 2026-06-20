@@ -1,4 +1,4 @@
-export type Column =
+export type Status =
   | "considering"
   | "applied"
   | "initial_interview"
@@ -12,7 +12,7 @@ export interface Job {
   id: string;
   title: string;
   company: string;
-  column: Column;
+  status: Status;
   interestLevel: InterestLevel;
   appliedDate: string; // ISO date string, e.g. "2026-06-19"
   description: string;
@@ -24,7 +24,7 @@ export function createEmptyJob(): Job {
     id: crypto.randomUUID(),
     title: "",
     company: "",
-    column: "considering",
+    status: "considering",
     interestLevel: "neutral",
     appliedDate: new Date().toISOString().split("T")[0],
     description: "",

@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { type Job, type Column, createEmptyJob } from "../../types/kanban";
+import { type Job, type Status, createEmptyJob } from "../../types/kanban";
 import { mockJobs } from "../../data/mockJobs";
 import KanbanColumn from "./KanbanColumn";
 import JobDetailPanel from "./JobDetailPanel";
 
-const COLUMNS: Column[] = [
+const COLUMNS: Status[] = [
   "considering",
   "applied",
   "initial_interview",
@@ -17,8 +17,8 @@ export default function KanbanBoard() {
   const [jobs, setJobs] = useState<Job[]>(mockJobs);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
-  const getJobsForColumn = (column: Column) =>
-    jobs.filter((job) => job.column === column);
+  const getJobsForColumn = (column: Status) =>
+    jobs.filter((job) => job.status === column);
 
   const handleCardClick = (job: Job) => {
     setSelectedJob(job);
