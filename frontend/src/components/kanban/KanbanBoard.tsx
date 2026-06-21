@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { type Job, type Status, createEmptyJob } from "../../types/kanban";
 import { jobsApi } from "../../services/jobsApi";
+import { authApi } from "../../services/authApi";
 import KanbanColumn from "./KanbanColumn";
 import JobDetailPanel from "./JobDetailPanel";
+import { useNavigate } from "react-router-dom";
 
 const COLUMNS: Status[] = [
   "considering",
@@ -18,6 +20,7 @@ export default function KanbanBoard() {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     jobsApi
@@ -70,6 +73,11 @@ export default function KanbanBoard() {
     }
   };
 
+  const handleLogout = async () => {
+    await authApi.logout();
+    navigate("/login");
+  };
+
   if (loading)
     return (
       <div className="flex h-screen items-center justify-center bg-slate-50">
@@ -94,9 +102,7 @@ export default function KanbanBoard() {
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
-      {/* Main board area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Top header bar */}
         <header className="flex-none flex items-center justify-between px-8 py-5 bg-white border-b border-slate-200 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-sm">
@@ -112,16 +118,24 @@ export default function KanbanBoard() {
               </p>
             </div>
           </div>
-          <button
-            onClick={handleAddJob}
-            className="cursor-pointer flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all shadow-sm shadow-indigo-200"
-          >
-            <span className="text-base leading-none">+</span>
-            Add Job
-          </button>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleAddJob}
+              className="cursor-pointer flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all shadow-sm shadow-indigo-200"
+            >
+              <span className="text-base leading-none">+</span>
+              Add Job
+            </button>
+            <button
+              onClick={handleLogout}
+              className="cursor-pointer text-sm font-medium text-slate-400 hover:text-slate-600 px-3 py-2 rounded-lg hover:bg-slate-100 transition-all"
+            >
+              Sign out
+            </button>
+          </div>
         </header>
 
-        {/* Kanban columns */}
         <div className="flex-1 overflow-x-auto overflow-y-hidden flex justify-center">
           <div className="inline-flex gap-4 h-full px-8 py-6 items-start">
             {COLUMNS.map((column) => (
@@ -136,7 +150,6 @@ export default function KanbanBoard() {
         </div>
       </div>
 
-      {/* Centered modal overlay */}
       {selectedJob && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm"

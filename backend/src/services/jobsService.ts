@@ -12,6 +12,7 @@ export type InterestLevel = "dream" | "excited" | "neutral" | "backup";
 
 export interface Job {
   id: string;
+  userId: string;
   title: string;
   company: string;
   status: Status;
@@ -24,6 +25,7 @@ export interface Job {
 function mapRow(row: any): Job {
   return {
     id: row.id,
+    userId: row.user_id,
     title: row.title,
     company: row.company,
     status: row.status,
@@ -34,15 +36,19 @@ function mapRow(row: any): Job {
   };
 }
 
-export async function getAllJobs(): Promise<Job[]> {
-  const jobs = await sql`SELECT * FROM jobs`;
+export async function getAllJobs(userId: string): Promise<Job[]> {
+  const jobs = await sql`SELECT * FROM jobs WHERE user_id = ${userId}`;
   return jobs.map(mapRow);
 }
 
-export async function createJob(job: Omit<Job, "id">): Promise<Job> {
-  const rows = await sql`
-    INSERT INTO jobs (title, company, status, interest_level, applied_date, description, notes)
+export async function createJob(
+  userId: string,
+  job: Omit<Job, "id" | "userId">,
+): Promise<Job> {
+  const [row] = await sql`
+    INSERT INTO jobs (user_id, title, company, status, interest_level, applied_date, description, notes)
     VALUES (
+      ${userId},
       ${job.title},
       ${job.company},
       ${job.status},
@@ -54,14 +60,15 @@ export async function createJob(job: Omit<Job, "id">): Promise<Job> {
     RETURNING *
   `;
 
-  return mapRow(rows[0]);
+  return mapRow(row);
 }
 
 export async function updateJob(
   id: string,
-  updates: Partial<Omit<Job, "id">>,
+  userId: string,
+  updates: Partial<Omit<Job, "id" | "userId">>,
 ): Promise<Job | null> {
-  const rows = await sql`
+  const [row] = await sql`
     UPDATE jobs SET
       title          = COALESCE(${updates.title ?? null},          title),
       company        = COALESCE(${updates.company ?? null},        company),
@@ -70,16 +77,16 @@ export async function updateJob(
       applied_date   = COALESCE(${updates.appliedDate ?? null},    applied_date),
       description    = COALESCE(${updates.description ?? null},    description),
       notes          = COALESCE(${updates.notes ?? null},          notes)
-    WHERE id = ${id}
+    WHERE id = ${id} AND user_id = ${userId}
     RETURNING *
   `;
 
-  return rows.length ? mapRow(rows[0]) : null;
+  return row ? mapRow(row) : null;
 }
 
-export async function deleteJob(id: string): Promise<boolean> {
+export async function deleteJob(id: string, userId: string): Promise<boolean> {
   const rows = await sql`
-    DELETE FROM jobs WHERE id = ${id} RETURNING id
+    DELETE FROM jobs WHERE id = ${id} AND user_id = ${userId} RETURNING id
   `;
 
   return rows.length > 0;

@@ -1,7 +1,9 @@
 import express, { Application, Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import jobsRouter from "./routes/jobs";
+import authRouter from "./routes/auth";
 
 dotenv.config();
 
@@ -11,12 +13,15 @@ const PORT = process.env.PORT || 3000;
 app.use(
   cors({
     origin: "http://localhost:5173",
+    credentials: true,
   }),
 );
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/jobs", jobsRouter);
+app.use("/api/auth", authRouter);
 
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({
