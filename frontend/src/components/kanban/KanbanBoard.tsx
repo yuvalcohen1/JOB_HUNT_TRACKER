@@ -48,17 +48,34 @@ export default function KanbanBoard() {
       ? { ...updated, appliedDate: new Date().toISOString().split("T")[0] }
       : updated;
 
+    const exists = jobs.some((j) => j.id === jobToSave.id);
+
+    // Update UI immediately
+    if (exists) {
+      setJobs((prev) =>
+        prev.map((j) => (j.id === jobToSave.id ? jobToSave : j)),
+      );
+    } else {
+      setJobs((prev) => [...prev, jobToSave]);
+    }
+    setSelectedJob(null); // close modal immediately
+
+    // Sync with server in background
     try {
-      const exists = jobs.some((j) => j.id === jobToSave.id);
       if (exists) {
-        const saved = await jobsApi.update(jobToSave.id, jobToSave);
-        setJobs((prev) => prev.map((j) => (j.id === saved.id ? saved : j)));
+        await jobsApi.update(jobToSave.id, jobToSave);
       } else {
-        const created = await jobsApi.create(jobToSave);
-        setJobs((prev) => [...prev, created]);
+        await jobsApi.create(jobToSave);
       }
-      setSelectedJob(null);
     } catch (err: any) {
+      // Roll back on failure
+      if (exists) {
+        setJobs((prev) =>
+          prev.map((j) => (j.id === jobToSave.id ? updated : j)),
+        );
+      } else {
+        setJobs((prev) => prev.filter((j) => j.id !== jobToSave.id));
+      }
       setError(err.message);
     }
   };
