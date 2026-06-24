@@ -1,3 +1,5 @@
+import AppLogo from "../AppLogo";
+
 interface Props {
   jobCount: number;
   onAddJob: () => void;
@@ -8,9 +10,7 @@ export default function BoardHeader({ jobCount, onAddJob, onLogout }: Props) {
   return (
     <header className="flex-none flex items-center justify-between px-8 py-5 bg-white border-b border-slate-200 shadow-sm">
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-sm">
-          🗂
-        </div>
+        <AppLogo />
         <div>
           <h1 className="text-lg font-bold text-slate-800 leading-tight">
             Job Search Board
