@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { type Job, type Status, createEmptyJob } from "../../types/kanban";
 import { jobsApi } from "../../services/jobsApi";
 import { authApi } from "../../services/authApi";
 import KanbanColumn from "./KanbanColumn";
 import JobDetailPanel from "./JobDetailPanel";
-import { useNavigate } from "react-router-dom";
+import BoardHeader from "./BoardHeader";
 
 const COLUMNS: Status[] = [
   "considering",
@@ -103,38 +104,11 @@ export default function KanbanBoard() {
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="flex-none flex items-center justify-between px-8 py-5 bg-white border-b border-slate-200 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-sm">
-              🗂
-            </div>
-            <div>
-              <h1 className="text-lg font-bold text-slate-800 leading-tight">
-                Job Search Board
-              </h1>
-              <p className="text-xs text-slate-400">
-                {jobs.length} {jobs.length === 1 ? "position" : "positions"}{" "}
-                tracked
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleAddJob}
-              className="cursor-pointer flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all shadow-sm shadow-indigo-200"
-            >
-              <span className="text-base leading-none">+</span>
-              Add Job
-            </button>
-            <button
-              onClick={handleLogout}
-              className="cursor-pointer text-sm font-medium text-slate-400 hover:text-slate-600 px-3 py-2 rounded-lg hover:bg-slate-100 transition-all"
-            >
-              Sign out
-            </button>
-          </div>
-        </header>
+        <BoardHeader
+          jobCount={jobs.length}
+          onAddJob={handleAddJob}
+          onLogout={handleLogout}
+        />
 
         <div className="flex-1 overflow-x-auto overflow-y-hidden flex justify-center">
           <div className="inline-flex gap-4 h-full px-8 py-6 items-start">
