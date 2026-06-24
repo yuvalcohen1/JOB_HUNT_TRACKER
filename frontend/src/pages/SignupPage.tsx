@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import AuthForm from "../components/auth/AuthForm";
-import { authApi } from "../services/authApi";
+import { useAuth } from "../context/AuthContext";
 
 const FIELDS = [
   { name: "name", label: "Name", type: "text", placeholder: "Jane Smith" },
@@ -20,9 +20,10 @@ const FIELDS = [
 
 export default function SignupPage() {
   const navigate = useNavigate();
+  const { register } = useAuth();
 
   const handleSubmit = async (values: Record<string, string>) => {
-    await authApi.register(values.email, values.password, values.name);
+    await register(values.email, values.password, values.name);
     navigate("/login");
   };
 

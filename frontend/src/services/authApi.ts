@@ -43,4 +43,13 @@ export const authApi = {
       credentials: "include",
     });
   },
+
+  getMe: async (): Promise<User> => {
+    const res = await fetch(`${BASE_URL}/me`, {
+      credentials: "include",
+    });
+    if (!res.ok) throw new Error("Not authenticated");
+    const data = await res.json();
+    return data.user;
+  },
 };

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { type Job, type Status, createEmptyJob } from "../../types/kanban";
 import { jobsApi } from "../../services/jobsApi";
-import { authApi } from "../../services/authApi";
+import { useAuth } from "../../context/AuthContext";
 import KanbanColumn from "./KanbanColumn";
 import JobDetailPanel from "./JobDetailPanel";
 import BoardHeader from "./BoardHeader";
@@ -22,6 +22,7 @@ export default function KanbanBoard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   useEffect(() => {
     jobsApi
@@ -75,7 +76,7 @@ export default function KanbanBoard() {
   };
 
   const handleLogout = async () => {
-    await authApi.logout();
+    await logout();
     navigate("/login");
   };
 

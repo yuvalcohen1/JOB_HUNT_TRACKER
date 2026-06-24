@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import AuthForm from "../components/auth/AuthForm";
-import { authApi } from "../services/authApi";
+import { useAuth } from "../context/AuthContext";
 
 const FIELDS = [
   {
@@ -19,9 +19,10 @@ const FIELDS = [
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (values: Record<string, string>) => {
-    await authApi.login(values.email, values.password);
+    await login(values.email, values.password);
     navigate("/");
   };
 

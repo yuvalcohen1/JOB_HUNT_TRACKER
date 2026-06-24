@@ -61,3 +61,10 @@ export async function loginUser(
 
   return { user, token };
 }
+
+export async function getUserById(id: string): Promise<User> {
+  const [row] = await sql`SELECT * FROM users WHERE id = ${id}`;
+  if (!row) throw new Error("USER_NOT_FOUND");
+  const user = mapRow(row);
+  return user;
+}
