@@ -91,3 +91,17 @@ export async function deleteJob(id: string, userId: string): Promise<boolean> {
 
   return rows.length > 0;
 }
+
+export async function saveGeneratedSummary(
+  jobId: string,
+  userId: string,
+  summary: string,
+): Promise<void> {
+  await sql`
+    UPDATE jobs
+    SET
+      generated_summary    = ${summary},
+      summary_generated_at = now()
+    WHERE id = ${jobId} AND user_id = ${userId}
+  `;
+}

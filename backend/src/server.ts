@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import jobsRouter from "./routes/jobs";
 import authRouter from "./routes/auth";
 import profileRouter from "./routes/profile";
+import aiRouter from "./routes/ai";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/jobs", jobsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/profile", profileRouter);
+app.use("/api/ai", aiRouter);
 
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({

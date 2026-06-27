@@ -13,15 +13,17 @@ CREATE TABLE users (
 
 -- Jobs
 CREATE TABLE jobs (
-  id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id        UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  title          TEXT NOT NULL,
-  company        TEXT NOT NULL,
-  status         TEXT NOT NULL,
-  interest_level TEXT NOT NULL,
-  applied_date   DATE,
-  description    TEXT,
-  notes          TEXT
+  id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id              UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  title                TEXT NOT NULL,
+  company              TEXT NOT NULL,
+  status               TEXT NOT NULL,
+  interest_level       TEXT NOT NULL,
+  applied_date         DATE,
+  description          TEXT,
+  notes                TEXT,
+  generated_summary    TEXT,
+  summary_generated_at TIMESTAMPTZ
 );
 
 -- User Profiles
