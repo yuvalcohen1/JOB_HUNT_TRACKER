@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import jobsRouter from "./routes/jobs";
 import authRouter from "./routes/auth";
+import profileRouter from "./routes/profile";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/jobs", jobsRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/profile", profileRouter);
 
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({
