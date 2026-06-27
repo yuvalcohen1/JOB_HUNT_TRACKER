@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import AppLogo from "../AppLogo";
 
 interface Props {
@@ -7,6 +8,8 @@ interface Props {
 }
 
 export default function BoardHeader({ jobCount, onAddJob, onLogout }: Props) {
+  const navigate = useNavigate();
+
   return (
     <header className="flex-none flex items-center justify-between px-8 py-5 bg-white border-b border-slate-200 shadow-sm">
       <div className="flex items-center gap-3">
@@ -22,6 +25,12 @@ export default function BoardHeader({ jobCount, onAddJob, onLogout }: Props) {
       </div>
 
       <div className="flex items-center gap-2">
+        <button
+          onClick={() => navigate("/profile")}
+          className="cursor-pointer text-sm font-medium text-slate-400 hover:text-slate-600 px-3 py-2 rounded-lg hover:bg-slate-100 transition-all"
+        >
+          My Profile
+        </button>
         <button
           onClick={onAddJob}
           className="cursor-pointer flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all shadow-sm shadow-indigo-200"
